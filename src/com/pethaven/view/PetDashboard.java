@@ -1,21 +1,25 @@
 package com.pethaven.view;
 
 import java.awt.CardLayout;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import javax.swing.JOptionPane;
 
 /**
  * @author Chhantyal
  */
 public class PetDashboard extends javax.swing.JFrame {
     
-    // --- ADDED MEMORY COMPONENTS ---
-    private static String registeredUser = "";
-    private static String registeredPass = "";
-    
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(PetDashboard.class.getName());
+    private final String USER_FILE = "users.txt"; // Persistent storage file
 
     public PetDashboard() {
         initComponents();
-        this.setLocationRelativeTo(null); // Centers the window
+        this.pack(); // Snaps window to content
+        this.setLocationRelativeTo(null); // Centers window
     }
 
     @SuppressWarnings("unchecked")
@@ -52,8 +56,7 @@ public class PetDashboard extends javax.swing.JFrame {
         signupEmail = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setMinimumSize(new java.awt.Dimension(800, 500));
-        setResizable(false);
+        setResizable(false); 
 
         jPanel1.setBackground(new java.awt.Color(118, 172, 118));
 
@@ -65,7 +68,6 @@ public class PetDashboard extends javax.swing.JFrame {
         jLabel4.setForeground(new java.awt.Color(255, 255, 255));
         jLabel4.setText("Rescue. Care. Rehome.");
 
-        // Logo Logic
         try {
             jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/pethaven/view/catdog.png")));
         } catch (Exception e) {
@@ -98,7 +100,7 @@ public class PetDashboard extends javax.swing.JFrame {
                 .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel6)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(60, 60, 60)) // Adjusted bottom gap for symmetry
         );
 
         whiteParentPanel.setLayout(new java.awt.CardLayout());
@@ -142,9 +144,10 @@ public class PetDashboard extends javax.swing.JFrame {
         jLabel8.setText("Forgot Password?");
         LoginPanel.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 350, -1, -1));
 
+        // Fixed Coordinate: Moved to 400 for better border spacing
         jLabel9.setForeground(new java.awt.Color(118, 172, 118));
         jLabel9.setText("Privacy Policy | Terms of Use");
-        LoginPanel.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 380, -1, -1));
+        LoginPanel.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 400, -1, -1));
 
         whiteParentPanel.add(LoginPanel, "login");
 
@@ -192,63 +195,67 @@ public class PetDashboard extends javax.swing.JFrame {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(whiteParentPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 500, Short.MAX_VALUE)
+            .addComponent(whiteParentPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE) 
         );
 
         pack();
     }// </editor-fold>                        
 
-    // --- BUTTON LOGIC ---
-
-    // LOGIN ACTION [MODIFIED TO CONNECT TO DASHBOARD]
     private void LoginButton1ActionPerformed(java.awt.event.ActionEvent evt) {                                             
         String user = userField.getText();
         String pass = new String(passField.getPassword());
-        
-        // Checks Admin OR the Memory Variables
-        if ((user.equals("admin") && pass.equals("1234")) || 
-            (user.equals(registeredUser) && pass.equals(registeredPass) && !registeredUser.isEmpty())) {
-            
-            javax.swing.JOptionPane.showMessageDialog(this, "Login Successful! Welcome " + user);
-            
-            // --- THE CONNECTION CODE ---
-            new MainDashboard().setVisible(true); // Opens your table window
-            this.dispose();                       // Closes this login window
-            
+        boolean authenticated = false;
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(USER_FILE))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length == 2 && parts[0].equals(user) && parts[1].equals(pass)) {
+                    authenticated = true;
+                    break;
+                }
+            }
+        } catch (IOException e) {}
+
+        if (authenticated || (user.equals("admin") && pass.equals("1234"))) {
+            JOptionPane.showMessageDialog(this, "Login Successful!");
+            new MainDashboard().setVisible(true); 
+            this.dispose(); 
         } else {
-            javax.swing.JOptionPane.showMessageDialog(this, "Invalid Username or Password", "Login Error", 0);
+            JOptionPane.showMessageDialog(this, "Invalid Username or Password", "Login Error", 0);
         }
     }                                            
 
-    // SWITCH TO SIGNUP
     private void LoginButtonActionPerformed(java.awt.event.ActionEvent evt) {                                            
         CardLayout card = (CardLayout) whiteParentPanel.getLayout();
         card.show(whiteParentPanel, "signup");
-    }                                            
+    }                                           
 
-    // SWITCH TO LOGIN
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {                                         
         CardLayout card = (CardLayout) whiteParentPanel.getLayout();
         card.show(whiteParentPanel, "login");
     }                                        
 
-    // REGISTER ACTION
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {                                         
         String name = signupUser.getText();
         String pass = new String(signupPass.getPassword());
 
         if (name.isEmpty() || pass.isEmpty()) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Please fill in all fields!");
+            JOptionPane.showMessageDialog(this, "Please fill in all fields!");
         } else {
-            // Save to temporary memory
-            registeredUser = name;
-            registeredPass = pass;
-
-            javax.swing.JOptionPane.showMessageDialog(this, "Successfully Registered: " + name);
-            
-            // Auto-switch back to login
-            CardLayout card = (CardLayout) whiteParentPanel.getLayout();
-            card.show(whiteParentPanel, "login");
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(USER_FILE, true))) {
+                writer.write(name + "," + pass);
+                writer.newLine();
+                JOptionPane.showMessageDialog(this, "Successfully Registered: " + name);
+                
+                signupUser.setText("");
+                signupPass.setText("");
+                signupEmail.setText("");
+                CardLayout card = (CardLayout) whiteParentPanel.getLayout();
+                card.show(whiteParentPanel, "login");
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(this, "Error saving user to file!");
+            }
         }
     }                                        
 
@@ -263,11 +270,9 @@ public class PetDashboard extends javax.swing.JFrame {
         } catch (Exception ex) {
             logger.log(java.util.logging.Level.SEVERE, null, ex);
         }
-
         java.awt.EventQueue.invokeLater(() -> new PetDashboard().setVisible(true));
     }
 
-    // --- VARIABLES ---
     private javax.swing.JButton LoginButton;
     private javax.swing.JButton LoginButton1;
     private javax.swing.JPanel LoginPanel;
