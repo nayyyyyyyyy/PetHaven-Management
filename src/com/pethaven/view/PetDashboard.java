@@ -19,7 +19,7 @@ public class PetDashboard extends javax.swing.JFrame {
     public PetDashboard() {
         initComponents();
         this.pack(); // Snaps window to content
-        this.setLocationRelativeTo(null); // Centers window
+        this.setLocationRelativeTo(null); // Centers the window
     }
 
     @SuppressWarnings("unchecked")
