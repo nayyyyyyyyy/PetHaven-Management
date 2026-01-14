@@ -36,7 +36,7 @@ public class MainDashboard extends javax.swing.JFrame {
         jPanel7.setBackground(bgWhite); // Form Panel
         jTabbedPane1.setBackground(bgWhite);
 
-        // 3. TABLE FIX: High-quality headers and spacing
+        // 3. TABLE FIX: High-quality headers and spacing.
         jTable1.setRowHeight(35);
         jTable1.setShowGrid(false);
         jTable1.setIntercellSpacing(new Dimension(0, 0));
