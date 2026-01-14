@@ -49,7 +49,7 @@ public class MainDashboard extends javax.swing.JFrame {
         styleBtn(jButton5, new Color(100, 149, 237)); // Blue
         styleBtn(jButton4, new Color(255, 105, 97));  // Red
 
-        // 5. SIZE FIX: Stop the table from taking 70% of the screen
+        // 5. SIZE FIX: Stop the table from taking 70% of the screen ok
         // This gives the registration panel a "Preferred" height so the table shrinks.
         jPanel7.setPreferredSize(new Dimension(0, 280)); 
     }
