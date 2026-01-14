@@ -21,7 +21,7 @@ public class MainDashboard extends javax.swing.JFrame {
     }
 
     private void applyAestheticStyle() {
-        // 1. CUTE LOGOUT BUTTON: Soft yellow shade
+        // 1. CUTE LOGOUT BUTTON: Soft yellow shades
         jButton2.setBackground(new Color(255, 249, 196)); // Lemon Chiffon
         jButton2.setOpaque(true);
         jButton2.setBorderPainted(false);
