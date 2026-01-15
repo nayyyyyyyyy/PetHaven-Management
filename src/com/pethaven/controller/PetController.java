@@ -1,43 +1,34 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.pethaven.controller;
-
 import com.pethaven.model.PetModel;
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
 
-/**
- * Controller handling ArrayList and Queue logic
- */
 public class PetController {
-    // Storage for all pets
-    private ArrayList<PetModel> petList = new ArrayList<>();
     
-    // Queue for the "Recently Added" Requirement
-    private Queue<PetModel> recentQueue = new LinkedList<>();
-
-    public void addPet(PetModel pet) {
-        petList.add(pet);
-        
-        // Keep only the last 5 pets in the queue
-        if (recentQueue.size() >= 5) {
-            recentQueue.poll();
+    // 1. SELECTION SORT (Sort by ID) [cite: 2026-01-15]
+    public void sortByID(ArrayList<PetModel> list) {
+        for (int i = 0; i < list.size() - 1; i++) {
+            int minIdx = i;
+            for (int j = i + 1; j < list.size(); j++) {
+                if (list.get(j).getPetId() < list.get(minIdx).getPetId()) {
+                    minIdx = j;
+                }
+            }
+            PetModel temp = list.get(minIdx);
+            list.set(minIdx, list.get(i));
+            list.set(i, temp);
         }
-        recentQueue.add(pet);
     }
-
-    public ArrayList<PetModel> getAllPets() {
-        return petList;
-    }
-
-    public Queue<PetModel> getRecentQueue() {
-        return recentQueue;
-    }
-
-    public void deletePet(String id) {
-        petList.removeIf(p -> p.getId().equals(id));
+    
+    // 2. INSERTION SORT (Sort by Name) [cite: 2026-01-15]
+    public void sortByName(ArrayList<PetModel> list) {
+        for (int i = 1; i < list.size(); i++) {
+            PetModel key = list.get(i);
+            int j = i - 1;
+            while (j >= 0 && list.get(j).getName().compareToIgnoreCase(key.getName()) > 0) {
+                list.set(j + 1, list.get(j));
+                j--;
+            }
+            list.set(j + 1, key);
+        }
     }
 }
